@@ -1,0 +1,6 @@
+
+
+How to format the URL for yahoo CSV:
+https://code.google.com/p/yahoo-finance-managed/wiki/csvHistQuotesDownload
+
+
