@@ -46,53 +46,8 @@ class stock:
     return repr(self.ticker)
 
 
-  # update data on stock in dat file
-  def update(self):
-    if os.path.isfile(self.datfile):
-      with open(self.datfile) as f:
-        f.readline() # first line is always header
-        latest = datetime.strptime(f.readline().partition(',')[0], "%Y-%m-%d").date() # second line first column is always date
-      today = date.today()
-      if latest < today: # only grab latest data
-        url = 'http://ichart.finance.yahoo.com/table.csv?s=' + self.ticker
-        next_day = latest + timedelta(days=1)
-        txt_from = '&a=' + str(next_day.month-1) + '&b=' + str(next_day.day) + '&c=' + str(next_day.year)
-        txt_to   = '&d=' + str(today.month-1)    + '&e=' + str(today.day)    + '&f=' + str(today.year)
-        txt_int  = '&g=d' # interval, d = daily, w = weekly, m = monthly
-        try:
-          response = urllib2.urlopen(url + txt_from + txt_to + txt_int)
-        except urllib2.HTTPError: # no data in this date range
-          print 'Warning: No data for ticker ' + self.ticker + ' in date range ' + str(next_day) + ' to ' + str(today)
-        except urllib2.URLError:
-          raise StockError('Error: Check your internet connection.')
-        else:
-          cr = csv.reader(response)
-          with open(self.datfile) as f:
-            er = csv.reader(f)
-            with open('temp', 'w') as f:
-              w = csv.writer(f)
-              w.writerows(cr) # write new data...
-              next(er, None) # remove header
-              for row in er:
-                w.writerow(row) # append old data to new data
-          os.rename('temp', self.datfile)
-    else: # no local data, so grab everything!
-      url = 'http://ichart.finance.yahoo.com/table.csv?s=' + self.ticker
-      try:
-        response = urllib2.urlopen(url)
-      except urllib2.HTTPError:
-        raise StockError('Error: Ticker symbol ' + self.ticker + ' could not be found.')
-      except urllib2.URLError:
-        raise StockError('Error: Check your internet connection.')
-      cr = csv.reader(response)
-      with open(self.datfile, 'w') as f:
-        w = csv.writer(f)
-        w.writerows(cr)
-    self.__load()
-
-
   # use pickle
-  def update2(self):
+  def update(self):
     url = 'http://ichart.finance.yahoo.com/table.csv?s=' + self.ticker
     try:
       response = urllib2.urlopen(url)
@@ -112,7 +67,7 @@ class stock:
     if os.path.isfile(self.datfile):
       self.data = pickle.load(open(self.datfile, 'rb'))
     else:
-      self.update2()
+      self.update()
 
 
   # grab latest date available, returns date object
