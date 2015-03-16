@@ -104,7 +104,7 @@ class stock:
   # binary search for data on a specific day
   def __binsearch(self, subdata, day):
     if len(subdata) == 0:
-      raise StockError('Error: No data found for date ' + str(day))
+      raise StockError('Error: No data found for date ' + str(day) + ' for stock ' + self.ticker)
     else:
       midpoint = len(subdata)//2
       middata = subdata[midpoint]['Date']
@@ -146,13 +146,13 @@ class stock:
 
 
   # get closing price for a specific day
-  # date must be a datetime.date object
+  # day must be a datetime.date object
   def close(self, day, adjusted=True):
     return float(self.__row(day)['Adj Close' if adjusted else 'Close'])
 
 
   # get opening price for a specific day
-  # date must be a datetime.date object
+  # day must be a datetime.date object
   def open(self, day, adjusted=True):
     row = self.__row(day)
     if adjusted:
@@ -162,7 +162,7 @@ class stock:
 
 
   # get high price for a specific day
-  # date must be a datetime.date object
+  # day must be a datetime.date object
   def high(self, day, adjusted=True):
     row = self.__row(day)
     if adjusted:
@@ -172,7 +172,7 @@ class stock:
 
 
   # get low price for a specific day
-  # date must be a datetime.date object
+  # day must be a datetime.date object
   def low(self, day, adjusted=True):
     row = self.__row(day)
     if adjusted:
